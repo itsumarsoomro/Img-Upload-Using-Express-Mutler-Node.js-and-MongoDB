@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Upload and Viewer</title>
+  </head>
+  <body>
+    <h1>Image Viewer</h1>
+    <div id="imageContainer"></div>
+    <button onclick="loadImages()">View Images</button>
+
+    <h1>Image Upload</h1>
+    <input type="file" id="imageInput" />
+    <button onclick="uploadImage()">Upload Image</button>
+
+    <script>
+      async function uploadImage() {
+        const fileInput = document.getElementById("imageInput");
+        const file = fileInput.files[0];
+
+        //console.log(file);
+
+        if (!file) {
+          alert("Please select a file.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (response.ok) {
+            alert("Image uploaded successfully!");
+            fileInput.value = ""; // Clear the file input
+          } else {
+            const errorText = await response.text();
+            alert(`Error uploading image: ${errorText}`);
+          }
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          alert(
+            "An error occurred while uploading the image. Please try again."
+          );
+        }
+      }
+
+      async function loadImages() {
+        const imageContainer = document.getElementById("imageContainer");
+        imageContainer.innerHTML = ""; // Clear previous images
+
+        try {
+          const response = await fetch("/images");
+          if (!response.ok) {
+            throw new Error("Failed to load images");
+          }
+          const images = await response.json();
+          images.forEach((image, index) => {
+            const imgElement = document.createElement("img");
+            // Set the src attribute directly to the Base64 encoded image data
+            imgElement.src = `data:${image.img.contentType};base64,${image.img.data}`;
+            imgElement.alt = `Image ${index + 1}`;
+            imgElement.style.height = "200px"; // Set image height for display
+            imgElement.style.height = "200px";
+            imageContainer.appendChild(imgElement);
+          });
+        } catch (error) {
+          console.error("Error loading images:", error);
+          alert("Failed to load images. Please try again.");
+        }
+      }
+    </script>
+  </body>
+</html>
