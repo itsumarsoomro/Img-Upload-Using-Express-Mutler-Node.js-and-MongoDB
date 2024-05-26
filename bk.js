@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://umarsoomro76:XnciqHhPznuQ0n7V@trsutspot.tt3yve6.mongodb.net/TrustSpot?retryWrites=true&w=majority&appName=trsutSpot', {
+mongoose.connect('', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
